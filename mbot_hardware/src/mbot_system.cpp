@@ -67,7 +67,7 @@ hardware_interface::CallbackReturn MbotSystemHardware::on_configure(
        // B5. 流控  无流控 (None) - 只要有数据就发，不管对方死活
        serial_conn_.SetFlowControl(LibSerial::FlowControl::FLOW_CONTROL_NONE);
        serial_conn_.SetVMin(0); 
-       serial_conn_.SetVTime(1);
+       serial_conn_.SetVTime(0);
     }
     catch(...)
     {
@@ -165,6 +165,7 @@ hardware_interface::return_type MbotSystemHardware::write(
     }
     
     return hardware_interface::return_type::OK;
+
 }
 
 //重新read

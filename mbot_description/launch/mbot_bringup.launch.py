@@ -16,10 +16,7 @@ def generate_launch_description():
     # YAML 配置文件 (上一把我们写的那个)
     controller_config_path = os.path.join(pkg_share, "config/mbot_controller.yaml")
 
-    # 3. 解析 Xacro (关键步骤！)
-    # 【重点】这里必须设置 use_sim:=false
-    # 这样 URDF 里的 <xacro:unless value="${use_sim}"> 才会生效
-    # 从而加载 mbot_hardware/MbotSystemHardware 插件，而不是 Gazebo
+    # 3. 解析 Xacro 
     robot_description_content = Command(
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
@@ -49,7 +46,8 @@ def generate_launch_description():
         executable="ros2_control_node",
         parameters=[
             robot_description,      # 把 URDF 喂给它
-            controller_config_path  # 把 YAML 喂给它
+            controller_config_path,  # 把 YAML 喂给它
+            {'use_sim_time': False}
         ],
         output="screen",
     )
