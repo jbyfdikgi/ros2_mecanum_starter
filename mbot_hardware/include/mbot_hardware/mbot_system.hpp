@@ -85,7 +85,7 @@ public:
     hardware_interface::return_type write(
         const rclcpp::Time & time, const rclcpp::Duration & period)override;
 
-    // 暴露接口：告诉 ROS 我这儿有哪些数据可以被借用（位置、速度）
+    // 暴露接口：告诉 ROS有哪些数据可以被借用（位置、速度）
     std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
     std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 

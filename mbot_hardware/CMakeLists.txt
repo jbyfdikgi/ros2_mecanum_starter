@@ -11,12 +11,9 @@ find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
-
-# ================= 关键修改：用万能钥匙找 libserial =================
 find_package(PkgConfig REQUIRED)
-# 这句话的意思是：去系统里搜 "libserial" 这个名字，把它的路径全存到 LIB_SERIAL 变量里
 pkg_check_modules(LIB_SERIAL REQUIRED libserial)
-# ================================================================
+
 
 # 2. 编译库
 add_library(${PROJECT_NAME} SHARED
@@ -27,7 +24,6 @@ add_library(${PROJECT_NAME} SHARED
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
-  # 把刚才万能钥匙找到的头文件路径加进来
   ${LIB_SERIAL_INCLUDE_DIRS}
 )
 
@@ -37,7 +33,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
   pluginlib::pluginlib
   hardware_interface::hardware_interface
   rclcpp_lifecycle::rclcpp_lifecycle
-  # 把刚才万能钥匙找到的库文件链接进来
   ${LIB_SERIAL_LIBRARIES}
 )
 

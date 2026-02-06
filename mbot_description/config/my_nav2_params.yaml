@@ -156,7 +156,7 @@ controller_server:
       
       # 减速度限制 (必须配置，否则刹不住车)
       decel_lim_x: -2.5
-      decel_lim_y: -2.5  # 原来是 0.0，这意味着横向移动没有刹车！
+      decel_lim_y: -2.5  # 原来是 0.0，意味着横向移动没有刹车
       decel_lim_theta: -3.2
       
       vx_samples: 20
@@ -196,7 +196,6 @@ local_costmap:
       resolution: 0.05
       
       # 不再使用 robot_radius。改用矩形 footprint，适合麦轮车钻缝
-      # 这里的坐标是相对于车中心的 [x, y]
       footprint: "[ [0.2, 0.15], [0.2, -0.15], [-0.2, -0.15], [-0.2, 0.15] ]"
       
       plugins: ["voxel_layer", "inflation_layer"]

@@ -13,11 +13,14 @@ def generate_launch_description():
     pkg_share=get_package_share_directory("mbot_description")
     xacro_path=os.path.join(pkg_share,"urdf","mbot.urdf.xacro")
     world_path=os.path.join(pkg_share,"world","my_room.world")
+    rviz_config_path = os.path.join(pkg_share, 'config', 'mbot.rviz')
+    slam_params_path = os.path.join(pkg_share, 'config', 'mapper_params_online_async.yaml')
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
 
     #解析xacro
     robot_description_config=Command(["xacro ",xacro_path ," use_sim:=true"])
+
     #节点xacro内容发布，发布到rviz2的robot_description
     node_robot_state_publisher=Node(
         package="robot_state_publisher",
@@ -83,6 +86,27 @@ def generate_launch_description():
         cmd=['python3', os.path.join(pkg_share, 'launch', 'odom_tf.py')],
         output='screen'
     )
+    #启动rviz
+    node_rviz = Node(
+        package='rviz2',
+        executable='rviz2',
+        name='rviz2',
+        output='screen',
+        # 加载保存好的配置文件，如果文件不存在，去掉这一行 arguments 即可
+        arguments=['-d', rviz_config_path], 
+        parameters=[{'use_sim_time': use_sim_time}]
+    )
+
+        # 2. 引用自带的 launch 文件
+    slam_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
+        ),
+        launch_arguments={
+            'use_sim_time': 'true',  # 强调仿真时间
+            'slam_params_file': slam_params_path
+        }.items()
+    )
 
     return LaunchDescription([
         node_robot_state_publisher,
@@ -91,5 +115,7 @@ def generate_launch_description():
         load_broadcaster_controllers,
         cmd_vel_relay,
         odom_tf_node,
+        node_rviz,
+        slam_launch
 
     ])

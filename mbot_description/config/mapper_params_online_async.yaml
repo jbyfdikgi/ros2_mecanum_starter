@@ -4,14 +4,14 @@ slam_toolbox:
    
     odom_frame: odom
     map_frame: map
-    base_frame: base_footprint  # 你的车身基准坐标系
-    scan_topic: /scan           # 你的雷达话题，如果是 /mbot/scan 记得改这里！
-    use_sim_time: true          # ！！！仿真必须开启！！！
+    base_frame: base_footprint  
+    scan_topic: /scan           # 雷达话题
+    use_sim_time: true          # 仿真必须开启
 
-    # 建图模式
-    mode: mapping # mapping (建图) or localization (定位)
+   # mapping (建图) or localization (定位)
+    mode: mapping 
 
-    # 性能参数 (不用动)
+    # 性能参数 
     debug_logging: false
     throttle_scans: 1
     transform_publish_period: 0.02 # 50Hz
@@ -31,7 +31,7 @@ slam_toolbox:
     ceres_dogleg_type: TRADITIONAL_DOG_LEG
     ceres_loss_function: None
 
-    # 闭环检测 (Loop Closure) - 让你绕一圈回来地图能对齐
+    # 闭环检测 (Loop Closure)
     do_loop_closing: true
     use_scan_barycenter: true
     minimum_travel_distance: 0.5

@@ -101,9 +101,7 @@ hardware_interface::CallbackReturn MbotSystemHardware::on_activate(
     //发送开始指令 (可选) 
     try
     {
-        // 假设串口协议里并没有专门的使能指令，只要发速度它就动
-        // 那这里我们就不发东西，或者发个日志
-        // serial_conn_.Write("ENABLE\n"); 
+
     }
     catch (...)
     {
@@ -124,13 +122,11 @@ hardware_interface::CallbackReturn MbotSystemHardware::on_deactivate(
     //安全停车 
     try
     {
-        // 以后我们会封装一个 send_command 函数，这里暂时先空着
-        // 逻辑上应该是： send_command(0, 0, 0, 0); 
+        // 以后会封装一个 send_command 函数，这里暂时先空着
     }
     catch (...)
     {
         RCLCPP_WARN(rclcpp::get_logger("MbotSystemHardware"), "Error while deactivating!");
-        // 即使这里出错了，通常也会返回 SUCCESS，因为都要关机了，报错也没法挽回
     }
 
     RCLCPP_INFO(rclcpp::get_logger("MbotSystemHardware"), "System Deactivated!");
@@ -241,7 +237,7 @@ hardware_interface::return_type MbotSystemHardware::read(
     return hardware_interface::return_type::OK;
 }
 
-// 新增：导出状态接口 (State Interfaces)
+//导出状态接口 (State Interfaces)
 std::vector<hardware_interface::StateInterface> MbotSystemHardware::export_state_interfaces()
 {
     std::vector<hardware_interface::StateInterface> state_interfaces;
@@ -259,7 +255,7 @@ std::vector<hardware_interface::StateInterface> MbotSystemHardware::export_state
     return state_interfaces;
 }
 
-// 新增：导出命令接口 (Command Interfaces)
+//导出命令接口 (Command Interfaces)
 std::vector<hardware_interface::CommandInterface> MbotSystemHardware::export_command_interfaces()
 {
   std::vector<hardware_interface::CommandInterface> command_interfaces;
@@ -283,7 +279,7 @@ std::vector<hardware_interface::CommandInterface> MbotSystemHardware::export_com
 
 
 
-// 2. 注册插件
+// 注册插件
 // 参数1: 类名 (带命名空间)
 // 参数2: 父类名 (这是必须要写的固定格式)
 PLUGINLIB_EXPORT_CLASS(
