@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+    <xacro:include filename="common_inertia.xacro" />
+
+    <xacro:macro name="base_xacro" params="base_length base_width base_height base_mass plate_thickness wheel_radius">
+        <!-- 足迹 -->
+        <link name="base_footprint"/>
+
+        <link name="base_link">
+
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <box size="${base_length} ${base_width} ${base_height}"/>
+                </geometry>
+                <material name="white">
+                    <color rgba="1.0 1.0 1.0 1.0"/>
+                </material>
+            </visual>
+
+        <collision>
+            <origin xyz="0 0 ${-(base_height/2 - plate_thickness/2)}" rpy="0 0 0"/>
+            <geometry>
+                <box size="${base_length} ${base_width} ${plate_thickness}"/> 
+            </geometry>
+        </collision>
+
+        <collision>
+            <origin xyz="0 0 ${(base_height/2 - plate_thickness/2)}" rpy="0 0 0"/>
+            <geometry>
+                <box size="${base_length} ${base_width} ${plate_thickness}"/>
+            </geometry>
+        </collision>
+
+            <xacro:box_inertia m="${base_mass}" d="${base_length}" w="${base_width}" h="${base_height}"/>   
+
+        </link>
+
+        <joint name="base_joint" type="fixed">
+            <origin xyz="0.0 0.0 ${base_height/2+wheel_radius}" rpy="0.0 0.0 0.0"/>
+            <parent link="base_footprint"/>
+            <child link="base_link"/>
+        </joint>
+
+     
+    </xacro:macro>
+
+</robot>

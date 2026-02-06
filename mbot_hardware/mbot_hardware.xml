@@ -1,0 +1,11 @@
+<library path="mbot_hardware">
+    <class name="mbot_hardware/MbotSystemHardware"
+        type="mbot_hardware::MbotSystemHardware"
+        base_class_type="hardware_interface::SystemInterface">
+    <description>
+      Mecanum robot hardware interface using LibSerial.
+    </description>
+
+
+    </class>
+</library>

@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="mbot">
+
+<xacro:arg name="use_sim" default="true" />
+
+<xacro:include filename="base.urdf.xacro" />
+<xacro:include filename="actuator/wheel.urdf.xacro" />
+<xacro:include filename="sensor/lidar.urdf.xacro" />
+<xacro:include filename="sensor/imu.urdf.xacro" />
+<xacro:include filename="ros2_control.xacro" />
+<xacro:include filename="$(find mbot_description)/urdf/plugin/gazebo_sensor_plugin.xacro" />
+
+<!-- 声明机器人长宽高 -->
+<xacro:property name="car_length" value="0.5" />
+<xacro:property name="car_width" value="0.3" />
+<xacro:property name="car_height" value="0.2" />
+<xacro:property name="car_mass" value="5.0" />
+
+<!-- 声明底板厚度 -->
+<xacro:property name="plate_thickness" value="0.01" />
+
+<!-- 声明lidar尺寸 -->
+<xacro:property name="lidar_radius" value="0.035" />
+<xacro:property name="lidar_height" value="0.04" />
+<xacro:property name="lidar_mass" value="0.2"/>
+
+<!-- 声明imu尺寸 -->
+<xacro:property name="imu_length" value="0.02" />
+<xacro:property name="imu_weight" value="0.027" />
+<xacro:property name="imu_height" value="0.004" />
+<xacro:property name="imu_mass" value="0.005"/>
+
+<!-- 声明轮子尺寸 -->
+<xacro:property name="wheel_radius" value="0.05" />
+<xacro:property name="wheel_width" value="0.04" />
+<xacro:property name="wheel_mass" value="0.3" />    
+
+<!-- 雷达距离前挡板距离 -->
+<xacro:property name="lidar_gap_front" value="0.03" />
+
+
+
+
+<!-- 雷达安装位置 -->
+<xacro:property name="lidar_x" value="${(car_length / 2) - lidar_gap_front - lidar_radius}" />
+<xacro:property name="lidar_z" value="${-(car_height / 2) + plate_thickness + (lidar_height / 2)}" />
+
+<!-- imu安装位置 -->
+<xacro:property name="imu_z"   value="${-(car_height / 2) + 0.005}" />
+
+<!-- 车轮安装位置 -->
+<xacro:property name="wheel_joint_z" value="${-(car_height / 2)}" />
+<xacro:property name="wheel_joint_x" value="${(car_length / 2) - wheel_radius - 0.02}" />
+<xacro:property name="wheel_joint_y" value="${(car_width / 2) + (wheel_width / 2)}" />
+
+<!-- 雷达FOV计算 -->
+<xacro:property name="dist_to_front" value="${(car_length / 2) - lidar_x}" />
+<xacro:property name="half_width" value="${car_width / 2}" />
+<xacro:property name="fov_half_angle" value="${atan2(half_width, dist_to_front)}" />
+<xacro:property name="safe_min_angle" value="${-(fov_half_angle - 0.05)}" />
+<xacro:property name="safe_max_angle" value="${fov_half_angle - 0.05}" />
+
+<!-- 车体大小 -->
+<xacro:base_xacro base_length="${car_length}" 
+base_width="${car_width}" 
+base_height="${car_height}" 
+base_mass="${car_mass}"
+plate_thickness="${plate_thickness}"
+wheel_radius="${wheel_radius}"/>
+
+<!-- mecanum轮 -->
+<xacro:mecanum_wheel prefix="front_left" 
+    x_reflect="1" y_reflect="1" 
+    wheel_radius="${wheel_radius}" 
+    wheel_width="${wheel_width}" 
+    wheel_mass="${wheel_mass}"
+    pos_x="${wheel_joint_x}"
+    pos_y="${wheel_joint_y}"
+    pos_z="${wheel_joint_z}"
+/>
+
+<xacro:mecanum_wheel prefix="front_right" 
+    x_reflect="1" y_reflect="-1" 
+    wheel_radius="${wheel_radius}" 
+    wheel_width="${wheel_width}" 
+    wheel_mass="${wheel_mass}"
+    pos_x="${wheel_joint_x}"
+    pos_y="${wheel_joint_y}"
+    pos_z="${wheel_joint_z}"
+/>
+
+<xacro:mecanum_wheel prefix="rear_left" 
+    x_reflect="-1" y_reflect="1" 
+    wheel_radius="${wheel_radius}" 
+    wheel_width="${wheel_width}" 
+    wheel_mass="${wheel_mass}"
+    pos_x="${wheel_joint_x}"
+    pos_y="${wheel_joint_y}"
+    pos_z="${wheel_joint_z}"
+/>
+
+<xacro:mecanum_wheel prefix="rear_right" 
+    x_reflect="-1" y_reflect="-1" 
+    wheel_radius="${wheel_radius}" 
+    wheel_width="${wheel_width}" 
+    wheel_mass="${wheel_mass}"
+    pos_x="${wheel_joint_x}"
+    pos_y="${wheel_joint_y}"
+    pos_z="${wheel_joint_z}"
+/>
+
+<!-- 传感器生成 -->
+<xacro:lidar_xacro prefix="lidar" 
+    parent="base_link"
+    lidar_radius="${lidar_radius}"
+    lidar_height="${lidar_height}" 
+    lidar_mass="${lidar_mass}" 
+    xyz="${lidar_x} 0 ${lidar_z}" 
+    rpy="0.0 0.0 0.0"/>
+
+<xacro:imu_xacro prefix="imu_center"
+    parent="base_link" 
+    imu_length="${imu_length}" 
+    imu_weight="${imu_weight}" 
+    imu_height="${imu_height}" 
+    imu_mass="${imu_mass}"
+    xyz="0.0 0.0 ${imu_z}"/>
+
+<!-- 插件 -->
+<xacro:lidar_plugin frame_prefix="lidar_link" min_angle="${safe_min_angle}" max_angle="${safe_max_angle}" />
+
+<xacro:mbot_ros2_control name="MbotSystem" use_sim="$(arg use_sim)"/>
+
+</robot>

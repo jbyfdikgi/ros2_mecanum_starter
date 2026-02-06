@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+
+    <xacro:macro name="imu_xacro" params="prefix parent imu_length imu_weight imu_height imu_mass xyz">
+        <link name="${prefix}_link">
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <box size="${imu_length} ${imu_weight} ${imu_height}"/>
+                </geometry>
+                <material name="purple">
+                    <color rgba="0.5 0.0 0.5 1.0"/>
+                </material>
+            </visual>
+            <collision>
+                <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <box size="${imu_length} ${imu_weight} ${imu_height}"/>
+                </geometry>
+            </collision>
+            
+            <xacro:box_inertia m="${imu_mass}" w="${imu_length}" h="${imu_weight}" d="${imu_height}"/>
+        </link>
+        <joint name="${prefix}_joint" type="fixed">
+            <origin xyz="${xyz}" rpy="0.0 0.0 0.0"/>
+            <parent link="${parent}"/>
+            <child link="${prefix}_link"/>
+        </joint>
+    </xacro:macro>
+</robot>

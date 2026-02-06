@@ -1,0 +1,46 @@
+slam_toolbox:
+  ros__parameters:
+
+   
+    odom_frame: odom
+    map_frame: map
+    base_frame: base_footprint  # 你的车身基准坐标系
+    scan_topic: /scan           # 你的雷达话题，如果是 /mbot/scan 记得改这里！
+    use_sim_time: true          # ！！！仿真必须开启！！！
+
+    # 建图模式
+    mode: mapping # mapping (建图) or localization (定位)
+
+    # 性能参数 (不用动)
+    debug_logging: false
+    throttle_scans: 1
+    transform_publish_period: 0.02 # 50Hz
+    map_update_interval: 5.0
+    resolution: 0.05
+    max_laser_range: 20.0 # 雷达看多远
+    minimum_time_interval: 0.5
+    transform_timeout: 0.2
+    tf_buffer_duration: 30.
+    stack_size_to_use: 40000000 # 内存分配
+
+    # 求解器参数 (不用动)
+    solver_plugin: solver_plugins::CeresSolver
+    ceres_linear_solver: SPARSE_NORMAL_CHOLESKY
+    ceres_preconditioner: SCHUR_JACOBI
+    ceres_trust_strategy: LEVENBERG_MARQUARDT
+    ceres_dogleg_type: TRADITIONAL_DOG_LEG
+    ceres_loss_function: None
+
+    # 闭环检测 (Loop Closure) - 让你绕一圈回来地图能对齐
+    do_loop_closing: true
+    use_scan_barycenter: true
+    minimum_travel_distance: 0.5
+    minimum_travel_heading: 0.5
+    loop_search_space_dimension: 8.0
+    angle_variance_penalty: 0.0
+    distance_variance_penalty: 0.5
+    link_match_minimum_response_fine: 10.0
+    link_scan_maximum_distance: 1.5
+    loop_search_maximum_distance: 3.0
+    do_grid_mapping: true
+    use_lifelong_map: false

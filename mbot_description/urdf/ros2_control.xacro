@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+    <xacro:macro name="mbot_ros2_control" params="name use_sim">
+        <ros2_control name="${name}" type="system">
+            <hardware>
+
+                <!-- 如果条件是真的（true/1）执行下面代码 -->
+                <xacro:if value="${use_sim}">
+                    <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+                </xacro:if>
+
+                <!-- 如果条件是假的（false/0）执行下面代码 -->
+                <xacro:unless value="${use_sim}">
+                    <plugin>mbot_hardware/MbotSystemHardware</plugin>
+                    <param name="port_name">/dev/ttyUSB0</param>
+                    <param name="baud_rate">115200</param>            
+                </xacro:unless>
+
+            </hardware>
+
+            <joint name="front_left_wheel_joint">
+                <command_interface name="velocity"/>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+            </joint>
+
+            <joint name="front_right_wheel_joint">
+                <command_interface name="velocity"/>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+            </joint>
+            
+            <joint name="rear_left_wheel_joint">
+                <command_interface name="velocity"/>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+            </joint>
+
+            <joint name="rear_right_wheel_joint">
+                <command_interface name="velocity"/>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+            </joint>
+                        
+        </ros2_control>
+
+        <xacro:if value="${use_sim}">
+            <gazebo>
+                <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+                    <parameters>$(find mbot_description)/config/mbot_controller.yaml</parameters>
+                </plugin>
+            </gazebo>
+        </xacro:if>
+
+
+    </xacro:macro>
+ 
+</robot>
