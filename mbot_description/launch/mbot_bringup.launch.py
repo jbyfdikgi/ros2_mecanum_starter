@@ -1,9 +1,9 @@
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.substitutions import Command, FindExecutable, PathJoinSubstitution
-from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import Command, FindExecutable, PathJoinSubstitution ,LaunchConfiguration
+from launch_ros.actions import Node 
 
 def generate_launch_description():
     
@@ -16,6 +16,14 @@ def generate_launch_description():
     # YAML 配置文件 (上一把我们写的那个)
     controller_config_path = os.path.join(pkg_share, "config/mbot_controller.yaml")
 
+    use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='false',
+        description='Use simulation (Gazebo) clock if true'
+    )
+    # 获取参数的值
+    use_sim_time = LaunchConfiguration('use_sim_time')  
+
     # 3. 解析 Xacro 
     robot_description_content = Command(
         [
@@ -23,7 +31,7 @@ def generate_launch_description():
             " ",
             model_path,
             " ",
-            "use_sim:=false", 
+            "use_sim:=",use_sim_time, 
         ]
     )
     
@@ -36,7 +44,10 @@ def generate_launch_description():
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="screen",
-        parameters=[robot_description]
+        parameters=[
+            robot_description,
+            {'use_sim_time': use_sim_time} 
+        ]
     )
 
     # 5. 节点：Controller Manager (ROS 2 Control 的大脑)
@@ -47,7 +58,7 @@ def generate_launch_description():
         parameters=[
             robot_description,      # 把 URDF 喂给它
             controller_config_path,  # 把 YAML 喂给它
-            {'use_sim_time': False}
+            {'use_sim_time': use_sim_time}
         ],
         output="screen",
     )
@@ -72,7 +83,7 @@ def generate_launch_description():
     )
 
     # 8. (可选) 节点：Rviz2
-    # 为了方便调试，默认启动 Rviz。如果你在无屏幕的树莓派上跑，可以注释掉这部分。
+    # 为了方便调试，默认启动 Rviz。如果在无屏幕的树莓派上跑，可以注释掉这部分。
     node_rviz2 = Node(
         package="rviz2",
         executable="rviz2",
@@ -84,6 +95,7 @@ def generate_launch_description():
 
     # 返回 Launch 描述
     return LaunchDescription([
+        use_sim_time_arg,
         node_robot_state_publisher,
         node_controller_manager,
         spawn_joint_state_broadcaster,

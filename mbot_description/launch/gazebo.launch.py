@@ -78,7 +78,7 @@ def generate_launch_description():
         name='cmd_vel_relay',
         output='screen',
         arguments=['/cmd_vel', '/mbot_base_controller/reference_unstamped'],
-        parameters=[{'use_sim_time': True}]
+        parameters=[{'use_sim_time': use_sim_time}]
     )
 
     #启动补丁脚本，手动拼接odom到baseprintfoot
@@ -103,7 +103,7 @@ def generate_launch_description():
             os.path.join(get_package_share_directory('slam_toolbox'), 'launch', 'online_async_launch.py')
         ),
         launch_arguments={
-            'use_sim_time': 'true',  # 强调仿真时间
+            'use_sim_time':use_sim_time,  # 强调仿真时间
             'slam_params_file': slam_params_path
         }.items()
     )
