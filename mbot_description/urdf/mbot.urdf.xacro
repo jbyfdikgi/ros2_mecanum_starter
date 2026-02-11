@@ -126,6 +126,7 @@ wheel_radius="${wheel_radius}"/>
 
 <!-- 插件 -->
 <xacro:lidar_plugin frame_prefix="lidar_link" min_angle="${safe_min_angle}" max_angle="${safe_max_angle}" />
+<xacro:imu_plugin frame_prefix="imu_center_link"/>
 
 <xacro:mbot_ros2_control name="MbotSystem" use_sim="$(arg use_sim)"/>
 

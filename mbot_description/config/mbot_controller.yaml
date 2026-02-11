@@ -24,7 +24,7 @@ mbot_base_controller:
     use_stamped_vel: false
     base_frame_id: base_footprint
     odom_frame_id: odom
-    enable_odom_tf: true
+    enable_odom_tf: false  # 让 EKF 来发布坐标变换，告诉系统车在哪
     
     # 速度限制
     linear:

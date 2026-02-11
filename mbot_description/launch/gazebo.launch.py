@@ -9,12 +9,16 @@ from ament_index_python import get_package_share_directory
 
 def generate_launch_description():
 
-    #找路径
+    #share路径
     pkg_share=get_package_share_directory("mbot_description")
+
     xacro_path=os.path.join(pkg_share,"urdf","mbot.urdf.xacro")
     world_path=os.path.join(pkg_share,"world","my_room.world")
+
+    #config配置文件路径
     rviz_config_path = os.path.join(pkg_share, 'config', 'mbot.rviz')
     slam_params_path = os.path.join(pkg_share, 'config', 'mapper_params_online_async.yaml')
+    ekf_config_path=os.path.join(pkg_share,"config","ekf.yaml")
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
 
@@ -81,10 +85,12 @@ def generate_launch_description():
         parameters=[{'use_sim_time': use_sim_time}]
     )
 
-    #启动补丁脚本，手动拼接odom到baseprintfoot
-    odom_tf_node = ExecuteProcess(
-        cmd=['python3', os.path.join(pkg_share, 'launch', 'odom_tf.py')],
-        output='screen'
+    #启动ekf，发布odom到basefootprint
+    ekf_node=Node(
+        package="robot_localization",
+        executable="ekf_node",
+        output="screen",
+        parameters=[ekf_config_path,{'use_sim_time': True}],
     )
     #启动rviz
     node_rviz = Node(
@@ -114,7 +120,7 @@ def generate_launch_description():
         spawn_entity,
         load_broadcaster_controllers,
         cmd_vel_relay,
-        odom_tf_node,
+        ekf_node,
         node_rviz,
         slam_launch
 

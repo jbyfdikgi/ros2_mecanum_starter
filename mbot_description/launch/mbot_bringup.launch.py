@@ -1,9 +1,9 @@
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument , ExecuteProcess
 from launch.substitutions import Command, FindExecutable, PathJoinSubstitution ,LaunchConfiguration
-from launch_ros.actions import Node 
+from launch_ros.actions import Node
 
 def generate_launch_description():
     
@@ -58,7 +58,7 @@ def generate_launch_description():
         parameters=[
             robot_description,      # 把 URDF 喂给它
             controller_config_path,  # 把 YAML 喂给它
-            {'use_sim_time': use_sim_time}
+            {'use_sim_time': use_sim_time} 
         ],
         output="screen",
     )
@@ -74,7 +74,6 @@ def generate_launch_description():
 
     # 7. 节点：加载底盘控制器 (Mecanum Controller)
     # 负责接收 /cmd_vel -> 计算轮速 -> 发送给硬件
-    # 【注意】名字 "mbot_base_controller" 必须和你 YAML 文件里的一层名字一致
     spawn_mbot_controller = Node(
         package="controller_manager",
         executable="spawner",
@@ -83,7 +82,6 @@ def generate_launch_description():
     )
 
     # 8. (可选) 节点：Rviz2
-    # 为了方便调试，默认启动 Rviz。如果在无屏幕的树莓派上跑，可以注释掉这部分。
     node_rviz2 = Node(
         package="rviz2",
         executable="rviz2",
@@ -92,7 +90,11 @@ def generate_launch_description():
         # 如果你有保存好的 rviz 配置，可以在这里加载
         # arguments=['-d', os.path.join(pkg_share, 'rviz', 'display.rviz')]
     )
-
+    # 9. 补丁脚本，手动拼接 odom 到 basefootprint
+    odom_tf_node = ExecuteProcess(
+        cmd=['python3', os.path.join(pkg_share, 'launch', 'odom_tf.py')],
+        output='screen'
+    )
     # 返回 Launch 描述
     return LaunchDescription([
         use_sim_time_arg,
@@ -100,5 +102,6 @@ def generate_launch_description():
         node_controller_manager,
         spawn_joint_state_broadcaster,
         spawn_mbot_controller,
+        odom_tf_node,
         # node_rviz2, # 如果不想自动弹窗，就把这行注释掉
     ])
