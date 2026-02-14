@@ -44,5 +44,6 @@ mbot_base_controller:
         max_velocity: 2.0
         max_acceleration: 2.0
         
+    #对角线R协方差
     pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
     twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
